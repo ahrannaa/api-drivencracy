@@ -2,6 +2,15 @@ import dayjs from "dayjs";
 import { ObjectId } from "mongodb";
 import { choiceCollection, pollCollection, voteCollection } from "../database/db.js";
 
+export async function registerChoice(req, res) {
+    const choice = {
+        title: req.body.title,
+        pollId: ObjectId(req.body.pollId)
+    }
+    const { insertedId } = await choiceCollection.insertOne(choice)
+    res.status(201).send({ ...choice, _id: insertedId })
+}
+
 export async function getChoices(req, res) {
     const { id } = req.params
 
