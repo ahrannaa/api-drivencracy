@@ -1,9 +1,9 @@
-import {  surveySchema } from "../models/survey.models.js";
+import { pollSchema } from "../models/poll.models.js";
 
-export async function surveyValidationSchema(req, res, next) {
+export async function pollValidationSchema(req, res, next) {
     const { title, expireAt } = req.body
 
-    const validation = surveySchema.validate({ title, expireAt }, { abortEarly: false })
+    const validation = pollSchema.validate({ title, expireAt }, { abortEarly: false })
 
     if (validation.error) {
         const erros = validation.error.details.map((detail) => detail.message)

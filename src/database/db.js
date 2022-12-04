@@ -12,6 +12,6 @@ try {
 }
 
 export const db = mongoClient.db("api-drivenCracy");
-export const surveyCollection  = db.collection("survey") // enquete
-export const votingOptionCollection = db.collection("votingOption")//opção de voto
+export const pollCollection  = db.collection("poll") // enquete
+export const choiceCollection = db.collection("choice")//opção de voto
 export const voteCollection = db.collection("vote")// voto

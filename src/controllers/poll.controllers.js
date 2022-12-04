@@ -1,41 +1,38 @@
 import { ObjectId } from "mongodb";
-import { surveyCollection, voteCollection, votingOptionCollection } from "../database/db.js"
+import { pollCollection, voteCollection, choiceCollection } from "../database/db.js"
 
-export async function registerSurvey(req, res) {
-    const newSurvey = req.body;
+export async function registerPoll(req, res) {
+    const newPoll = req.body
 
     try {
-        const survey = await surveyCollection.insertOne(newSurvey)
-        res.status(201).send(newSurvey)
-
+        await pollCollection.insertOne(newPoll)
+        res.status(201).send(newPoll)
     } catch (error) {
         console.log(error)
         res.sendStatus(500)
     }
 }
 
-export async function getSurvey(req, res) {
-
+export async function getPoll(req, res) {
     try {
-        const survey = await surveyCollection.find().toArray()
-        res.send(survey)
+        const polls = await pollCollection.find().toArray()
+        res.send(polls)
     } catch (error) {
         console.log(error)
         res.sendStatus(500)
     }
-
 }
 
 export async function getResult(req, res) {
     const { id } = req.params
 
     try {
-        const poll = await surveyCollection.findOne({ _id: ObjectId(id) })
+        const poll = await pollCollection.findOne({ _id: ObjectId(id) })
         if (!poll) {
             res.status(404).send("Essa enquete não existe")
         }
-        const votingOption = await votingOptionCollection.find({ pollId: ObjectId(id) }).toArray()
-        if (votingOption.length == 0) {
+        const choices = await choiceCollection.find({ pollId: ObjectId(id) }).toArray()
+        if (choices.length == 0) {
             res.status(404).send("Essa opção não existe")
         }
 
@@ -44,12 +41,12 @@ export async function getResult(req, res) {
             votes: 0
         }
 
-        for(const option of votingOption) {
-            const votes = await voteCollection.find({ choiceId: ObjectId(option._id) }).toArray()
+        for (const choice of choices) {
+            const votes = await voteCollection.find({ choiceId: ObjectId(choice._id) }).toArray()
             const total = votes.length
             if (total > winner.votes) {
                 winner.votes = total
-                winner.title = option.title
+                winner.title = choice.title
             }
         }
 
