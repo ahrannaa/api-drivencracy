@@ -11,7 +11,7 @@ export async function registerChoice(req, res) {
     const poll = await pollCollection.findOne({ _id: choice.pollId })
 
     if (!poll) {
-        res.status(404).send("Enquente não existe")
+        res.status(404).send(" Enquente não existe" )
         return
     }
 
