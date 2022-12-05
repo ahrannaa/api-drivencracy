@@ -20,21 +20,3 @@ export async function pollValidationSchema(req, res, next) {
 
     next()
 }
-
-export async function expireAtValidation(req, res, next) {
-    const pollId = req.body.pollId ? req.body.pollId : req.params.id
-
-    const poll = await pollCollection.findOne({ _id: ObjectId(pollId) })
-
-    if (!poll) {
-        res.status(404).send("Enquente não existe")
-        return
-    }
-
-    if (dayjs().isAfter(dayjs(poll.expireAt))) {
-        res.status(403).send("Enquete expirada")
-        return
-    }
-
-    next()
-}

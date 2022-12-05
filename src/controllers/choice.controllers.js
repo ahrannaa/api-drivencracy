@@ -4,9 +4,22 @@ import { choiceCollection, pollCollection, voteCollection } from "../database/db
 
 export async function registerChoice(req, res) {
     const choice = {
-        title: req.body.title,
+        title: req.body.title.toLowerCase(),
         pollId: ObjectId(req.body.pollId)
     }
+
+    const poll = await pollCollection.findOne({ _id: choice.pollId })
+
+    if (!poll) {
+        res.status(404).send("Enquente não existe")
+        return
+    }
+
+    if (dayjs().isAfter(dayjs(poll.expireAt))) {
+        res.status(403).send("Enquete expirada")
+        return
+    }
+
     const { insertedId } = await choiceCollection.insertOne(choice)
     res.status(201).send({ ...choice, _id: insertedId })
 }
@@ -36,7 +49,19 @@ export async function vote(req, res) {
     try {
         const choice = await choiceCollection.findOne({ _id: choiceId })
         if (!choice) {
-            res.status(404).send("Essa opção não existe")
+            res.status(404).send("Opção de voto não existe")
+            return
+        }
+
+        const poll = await pollCollection.findOne({ _id: choice.pollId })
+
+        if (!poll) {
+            res.status(404).send("Enquente não existe")
+            return
+        }
+    
+        if (dayjs().isAfter(dayjs(poll.expireAt))) {
+            res.status(403).send("Enquete expirada")
             return
         }
 

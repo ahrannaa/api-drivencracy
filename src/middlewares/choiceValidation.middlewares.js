@@ -15,14 +15,14 @@ export async function choiceValidation(req, res, next) {
     }
 
     const poll = await pollCollection.findOne({ _id: ObjectId(pollId) })
-    if (!poll ) {
+    if (!poll) {
         res.status(404).send("Enquete não existe")
         return
     }
 
-    const choice = await choiceCollection.findOne({ title })
+    const choice = await choiceCollection.findOne({ pollId: ObjectId(pollId), title: title.toLowerCase()})
     if (choice) {
-        res.status(409).send("Título já cadastrado")
+        res.status(409).send("Opção de voto já cadastrada")
         return
     }
 
